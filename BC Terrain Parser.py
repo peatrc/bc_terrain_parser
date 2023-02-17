@@ -38,6 +38,17 @@
 # glaciofluvial (F^g) terrace (t) composed of sandy gravel (sg) modified by slow 
 # downslope failures (F) that are no longer active (^I)
 
+import csv
+
+terrain_codes = []
+
+with open("ChilliwackTerrainCodes.csv") as csv_file:
+    csv_reader = csv.DictReader(csv_file)
+    for row in csv_reader:
+        terrain_codes.append(row["terrain"])
+
+print(terrain_codes)
+
 # Dictionary for Textural Terms
 textural_terms = {
     'a': 'Blocks',
@@ -268,7 +279,19 @@ bedrock_R_subclass_terms = {
     'sm': 'non-foliated, serpentine marble',
 }
 
-# Test to pull out a dictionary value
-str_w_bedrock_code = 'sm'
-print(bedrock_R_subclass_terms[str_w_bedrock_code])
-
+#---------------------------------------------------------
+# PARSING THE FIRST 3 CHARACTERS FOR THE TERRAIN CODE 
+#---------------------------------------------------------
+#Loop through the terrain_codes array (pulled from the csv file above)
+for code in terrain_codes:
+    #build a string called "matches" containing all characters in code that is "abkpszcdgrmyeu"(i.e., inside terrain dictionary)
+    matches = ""
+    for char in code[:3]:
+        if char in "abkpszcdgrmyeu":
+            matches += char
+    #if matches is not empty, then go through its characters and print out the associated terrain code from the dictionary
+    if matches:
+        print(matches + " " + code, end=" ")
+        for match in matches:
+            print(textural_terms[match], end=" ")
+        print()
