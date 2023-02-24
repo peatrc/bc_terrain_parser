@@ -283,15 +283,29 @@ bedrock_R_subclass_terms = {
 # PARSING THE FIRST 3 CHARACTERS FOR THE TERRAIN CODE 
 #---------------------------------------------------------
 #Loop through the terrain_codes array (pulled from the csv file above)
-for code in terrain_codes:
-    #build a string called "matches" containing all characters in code that is "abkpszcdgrmyeu"(i.e., inside terrain dictionary)
+for i, code in enumerate(terrain_codes):
+    # Remove all symbols "=" or "/" and all characters that come after those symbols
+    code = code.split("=")[0].split("/")[0]
+    # Parse the string into 4 parts
+    parts = []
+    for part in code.split("-"):
+        first_group = ""
+        second_group = ""
+        for char in part:
+            if char.islower():
+                first_group += char
+            elif char.isupper():
+                if first_group == "":
+                    first_group = part[:part.index(char)]
+                second_group += char
+        parts.append((first_group, second_group))
+    # Check the first group of lower case letters and print the terrain code if any of the characters match
     matches = ""
-    for char in code[:3]:
+    for char in parts[0][0][:3]:
         if char in "abkpszcdgrmyeu":
             matches += char
-    #if matches is not empty, then go through its characters and print out the associated terrain code from the dictionary
     if matches:
-        print(matches + " " + code, end=" ")
+        print(f"{i}: {'-'.join([p[0]+p[1] for p in parts])}", end=" ")
         for match in matches:
             print(textural_terms[match], end=" ")
         print()
