@@ -309,3 +309,7 @@ for i, code in enumerate(terrain_codes):
         for match in matches:
             print(textural_terms[match], end=" ")
         print()
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
