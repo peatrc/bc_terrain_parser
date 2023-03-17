@@ -318,7 +318,7 @@ bedrock_R_subclass_terms = {
 #     import doctest
 #     doctest.testmod()
 
-# Open the CSV file and load its contents into a dictionary
+""" # Open the CSV file and load its contents into a dictionary
 with open('ChilliwackTerrainCodes.csv') as file:
     reader = csv.DictReader(file)
     terrain_dict = {}
@@ -393,4 +393,43 @@ for key, value in terrain_dict.items():
         terrain_dict[key] = value + ' ' + ' '.join(textural_terms_list)
 
 print(terrain_dict)
+ """
+
+# Load data into dictionary
+terrain_dict = {}
+with open('ChilliwackTerrainCodes.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        terrain_dict[row['fid']] = row['terrain']
+
+# Parse terrain column
+terrain_dict_parsed = {}
+for key, value in terrain_dict.items():
+    parsed_values = []
+    current_string = ''
+    for c in value:
+        if c in '/=':
+            if current_string != '':
+                parsed_values.append(current_string)
+            parsed_values.append(c)
+            current_string = ''
+        else:
+            current_string += c
+    if current_string != '':
+        parsed_values.append(current_string)
+    terrain_dict_parsed[key] = parsed_values
+
+# Print parsed dictionary
+print(terrain_dict_parsed)
+
+# Write parsed data to CSV file
+fieldnames = ['fid', 'terrain'] + [f'parsed_{i}' for i in range(len(parsed_values))]
+with open('ChilliwackTerrainCodes_parsed.csv', 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames)
+    writer.writeheader()
+    for key, value in terrain_dict_parsed.items():
+        row = {'fid': key, 'terrain': terrain_dict[key]}
+        for i, parsed_value in enumerate(value):
+            row[f'parsed_{i}'] = parsed_value
+        writer.writerow(row)
 
