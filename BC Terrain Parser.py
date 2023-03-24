@@ -422,14 +422,21 @@ for key, value in terrain_dict.items():
 # Print parsed dictionary
 print(terrain_dict_parsed)
 
-# Write parsed data to CSV file
-fieldnames = ['fid', 'terrain'] + [f'parsed_{i}' for i in range(len(parsed_values))]
-with open('ChilliwackTerrainCodes_parsed.csv', 'w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames)
-    writer.writeheader()
-    for key, value in terrain_dict_parsed.items():
-        row = {'fid': key, 'terrain': terrain_dict[key]}
-        for i, parsed_value in enumerate(value):
-            row[f'parsed_{i}'] = parsed_value
-        writer.writerow(row)
+lst = [[k]+v for k, v in terrain_dict_parsed.items()] #convert dict to a list
+
+#write rows all at once
+with open('ChilliwackTerrainCodes_parsed.csv','w') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerows(lst)
+
+# # Write parsed data to CSV file
+# fieldnames = ['fid', 'terrain'] + [f'parsed_{i}' for i in range(len(parsed_values))]
+# with open('ChilliwackTerrainCodes_parsed.csv', 'w', newline='') as f:
+#     writer = csv.DictWriter(f, fieldnames)
+#     writer.writeheader()
+#     for key, value in terrain_dict_parsed.items():
+#         row = {'fid': key, 'terrain': terrain_dict[key]}
+#         for i, parsed_value in enumerate(value):
+#             row[f'parsed_{i}'] = parsed_value
+#         writer.writerow(row)
 
