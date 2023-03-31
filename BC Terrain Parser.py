@@ -395,48 +395,166 @@ for key, value in terrain_dict.items():
 print(terrain_dict)
  """
 
-# Load data into dictionary
-terrain_dict = {}
-with open('ChilliwackTerrainCodes.csv', 'r') as f:
-    reader = csv.DictReader(f)
+import csv
+
+# Open and read the original CSV file
+with open('ChilliwackTerrainCodes.csv', 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    # Load the columns into a dictionary
+    terrain_dict = {}
     for row in reader:
         terrain_dict[row['fid']] = row['terrain']
 
-# Parse terrain column
+# Initialize the parsed dictionary
 terrain_dict_parsed = {}
+
+# Go through each value in the 'terrain' column and parse it
 for key, value in terrain_dict.items():
     parsed_values = []
-    current_string = ''
-    for c in value:
-        if c in '/=':
-            if current_string != '':
-                parsed_values.append(current_string)
-            parsed_values.append(c)
-            current_string = ''
+    current_word = ''
+    for i in range(len(value)):
+        if value[i] == '/' or value[i] == '=' or value[i] == '-':
+            if current_word != '':
+                parsed_values.append(current_word)
+            parsed_values.append(value[i])
+            current_word = ''
+        elif i == 0:
+            current_word = value[i]
+        elif value[i].islower() and value[i-1].isupper():
+            if current_word != '':
+                parsed_values.append(current_word)
+            current_word = value[i]
+        elif value[i].isupper() and value[i-1].islower():
+            if current_word != '':
+                parsed_values.append(current_word)
+            current_word = value[i]
+        elif value[i] == '$' and value[i+1].isupper():
+            if current_word != '':
+                parsed_values.append(current_word)
+            current_word = value[i] + value[i+1]
         else:
-            current_string += c
-    if current_string != '':
-        parsed_values.append(current_string)
+            current_word += value[i]
+    if current_word != '':
+        parsed_values.append(current_word)
+
+    # Add the parsed values to the parsed dictionary
     terrain_dict_parsed[key] = parsed_values
 
-# Print parsed dictionary
+    # Go through each value in the parsed dictionary and merge any values of '-'
+for key, value in terrain_dict_parsed.items():
+    new_values = []
+    merge_value = ''
+    for v in value:
+        if v == '-':
+            merge_value += v
+        elif merge_value != '':
+            new_values.append(merge_value + v)
+            merge_value = ''
+        else:
+            new_values.append(v)
+        if '/' in v:
+            merge_value = ''
+    terrain_dict_parsed[key] = new_values
+# Print the parsed dictionary
 print(terrain_dict_parsed)
 
-lst = [[k]+v for k, v in terrain_dict_parsed.items()] #convert dict to a list
+# Define the new dictionary
+#terrain_dict_updated = {}
 
-#write rows all at once
-with open('ChilliwackTerrainCodes_parsed.csv','w') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',')
-    writer.writerows(lst)
+# Go through each value in the 'terrain' column
+for key, value in terrain_dict_parsed.items():
+    # Check if the first value starts with '/'
+    if value[0] == '/':
+        # Replace the '/' with the new value
+        value[0] = '**' # ** indicicates "moderately extensive but discontinuous" to be changed after
+    # Update the dictionary with the modified values
+    terrain_dict_parsed[key] = value
 
-# # Write parsed data to CSV file
-# fieldnames = ['fid', 'terrain'] + [f'parsed_{i}' for i in range(len(parsed_values))]
-# with open('ChilliwackTerrainCodes_parsed.csv', 'w', newline='') as f:
-#     writer = csv.DictWriter(f, fieldnames)
-#     writer.writeheader()
-#     for key, value in terrain_dict_parsed.items():
-#         row = {'fid': key, 'terrain': terrain_dict[key]}
-#         for i, parsed_value in enumerate(value):
-#             row[f'parsed_{i}'] = parsed_value
-#         writer.writerow(row)
+# Print the updated dictionary
+print(terrain_dict_parsed)
+
+#adding * if no texture code exists
+for key, value in terrain_dict_parsed.items():
+    new_values = []
+    lowercase_found = False
+    for i, v in enumerate(value):
+        if v.isupper() and not lowercase_found:
+            new_values.append('*')
+        if v.islower():
+            lowercase_found = True
+        new_values.append(v)
+    terrain_dict_parsed[key] = new_values
+
+# Print the updated dictionary
+print(terrain_dict_parsed)
+
+# add a * if no surface expression exists
+for fid, values in terrain_dict_parsed.items():
+    found_uppercase = False
+    for i, value in enumerate(values):
+        if any(c.isupper() for c in value):
+            found_uppercase = True
+            if i + 1 >= len(values) or not values[i + 1][0].islower():
+                values.insert(i + 1, '*')
+            break
+    if not found_uppercase:
+        values.insert(0, '*')
+        
+print(terrain_dict_parsed)
+# add a * is no geomorph process
+for fid in terrain_dict_parsed:
+    values = terrain_dict_parsed[fid]
+    index_uppercase = -1
+    for i, value in enumerate(values):
+        if value[0].isupper():
+            index_uppercase = i
+            break
+    if index_uppercase == -1:
+        continue
+    if index_uppercase < len(values) - 1 and not values[index_uppercase + 1].startswith('-'):
+        values.insert(index_uppercase + 2, '*')
+print(terrain_dict_parsed)
+
+for fid in terrain_dict_parsed:
+    surf_material = surficial_material_terms.get(terrain_dict_parsed[fid][1], 'Unknown')
+    print(f"Fid: {fid}, Surficial Material: {surf_material}")
+
+#temp printing for show
+print(terrain_dict_parsed)   
+#count how many discrete units exist in the terrain code
+counts = {}
+for fid, values in terrain_dict_parsed.items():
+    count = 0
+    for i in range(1, len(values)):
+        if values[i] == '/' or values[i] == '=':
+            count += 1
+    counts[fid] = count
+
+max_count = max(counts.values())
+print(max_count)
+
+
+# Add the parsed values as new columns in the original dictionary
+for key, value in terrain_dict_parsed.items():
+    terrain_dict[key] = value
+
+# Write the parsed dictionary to a new CSV file
+with open('ChilliwackTerrainCodes_parsed.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['fid', 'terrain'] + list(terrain_dict_parsed.values())[0])
+    for key, value in terrain_dict.items():
+        row_values = [key, value]
+        if key in terrain_dict_parsed:
+            row_values += terrain_dict_parsed[key]
+        else:
+            row_values += [''] * len(list(terrain_dict_parsed.values())[0])
+        writer.writerow(row_values)
+
+
+
+
+# Print the parsed dictionary
+#print(terrain_dict_parsed)
+
+
 
