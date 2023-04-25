@@ -15,8 +15,8 @@
 # 
 # If the terrain code does not specify any of the descriptors, the returned descriptor will
 # simply be '' for that value.
-
-
+#
+# Author: Pete Carvalho Apr 25, 2023
 
 import re
 
