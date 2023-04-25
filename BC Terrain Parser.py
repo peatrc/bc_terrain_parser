@@ -501,6 +501,7 @@ for fid, values in terrain_dict_parsed.items():
         values.insert(0, '*')
         
 print(terrain_dict_parsed)
+
 # add a * is no geomorph process
 for fid in terrain_dict_parsed:
     values = terrain_dict_parsed[fid]
@@ -513,6 +514,7 @@ for fid in terrain_dict_parsed:
         continue
     if index_uppercase < len(values) - 1 and not values[index_uppercase + 1].startswith('-'):
         values.insert(index_uppercase + 2, '*')
+        
 print(terrain_dict_parsed)
 
 for fid in terrain_dict_parsed:
