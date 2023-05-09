@@ -288,9 +288,10 @@ def BCTCSparse(terrain_code):
         fourth_val = ""
         fifth_val = ""
 
-        # check the first uppercase letter in the string
+        # *SURFICIAL MATERIAL*  check the first uppercase letter in the string
         first_val = ""
 
+        # this conditional makes sure to include Bedrock modifier codes (if they exist)
         if string.find("R") >= 2:
             prev_two = string[string.find("R")-2:string.find("R")]
             if prev_two in bedrock_R_subclass_terms.keys():
@@ -304,7 +305,7 @@ def BCTCSparse(terrain_code):
                     first_val += string[i]
                 break
     
-        # assign the second value
+        # *SURFACE EXPRESSION*  assign the second value
         upper_found = False
         second_val = ''
         for char in string:
@@ -315,7 +316,7 @@ def BCTCSparse(terrain_code):
             elif char == '-':
                 upper_found = False
         
-        # assign the third value
+        # *TEXTURE* assign the third value
         third_val = ""
         for char in string:
             if char.isupper():
@@ -323,21 +324,22 @@ def BCTCSparse(terrain_code):
             elif char.islower():
                 third_val += char
         
-        # assign the fourth value
+        # *GEOMORPHOLOGICAL PROCESS* assign the fourth value
         fourth_val = ""
+        # strip the '-' that indicates the following chars codify geomorph processes
         if '-' in string:
             i = string.index('-')
             fourth_val = string[i:]
             #remove / or = or numeric data
             fourth_val = re.sub('[0-9/=-]', '', fourth_val)
 
-        # assign the fifth value
+        # *CONTINUITY* assign the fifth value
         if string[0] == '/':
             fifth_val = "discontinuous"
         else:
             fifth_val = "continuous"
 
-        # assign the sixth value (terrain extent relative to the following terrain)
+        # *EXTENT RELATIVE TO NEXT TERRAIN TYPE* assign the sixth value (terrain extent relative to the following terrain)
         sixth_val = ""
         if string[-1] == "=":
             sixth_val = "equal extent"
@@ -356,7 +358,10 @@ def BCTCSparse(terrain_code):
        # print(new_list[0][0][:2])
 
     # Loop over each list in new_list and replace coded characters with descriptive words in dictionaries
+    
     for i in range(len(new_list)):
+        
+        # SURFICIAL MATERIAL CODE INTERPRETATION
         # Replace the first value with the associated value in the surficial_material_terms dictionary
         first_val = ''
         if len(new_list[i][0]) > 2 and new_list[i][0][:2] in bedrock_R_subclass_terms:
@@ -388,12 +393,15 @@ def BCTCSparse(terrain_code):
     
         new_list[i][0] = first_val
         
+        # SURFACE EXPRESSION CODE INTERPRETATION
         # Replace the second value with the associated value in the surface_expression_terms dictionary for each character
         new_list[i][1] = ' '.join([surface_expression_terms[c] if c in surface_expression_terms else c for c in new_list[i][1]])
 
+        # TEXTURE CODE INTERPRETATION
         # Replace the third value in each list with the associated value in the textural_terms dictionary for each character
         new_list[i][2] = ' '.join([textural_terms[c] if c in textural_terms else c for c in new_list[i][2]])
 
+        # GEOMORPHOLOGICAL PROCESSES CODE INTERPRATATION
         # Replace 4th value w the associated value in the geomorphological_process_terms dictionary
         # Initialize new_geomorph to empty string
         new_geomorph = ''
