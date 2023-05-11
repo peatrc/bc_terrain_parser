@@ -51,21 +51,23 @@ with open('ChilliwackTerrainCodes.csv', newline='') as csvfile:
         terrain_code.append(row[1])
 
 # hardcode a string to parse as the last entry
-terrain_code.append('spRks/zCb-Fe')
+terrain_code.append('spRks//zCb-Fe')
+terrain_code.append('oNTA')
+terrain_code.append('NT-FqYAY')
+terrain_code.append('wowGIBBErish/112rz-APEz$!@')
 
 
-
-print(terrain_code[1])
 returned_list = []
 for i in range(1, len(terrain_code)):
     print(terrain_code[i])
     returned_list.append(BCTCSparse(terrain_code[i]))
-    returned_list[i-1].append(terrain_code[i])
-    print(returned_list[i-1])
-
-#how many times does the * char appear (flagging potential parsing anomalies/errors)?
-count = 0
-for sublist in returned_list:
-    count += sublist.count('*')
-print(count)
+    #returned_list[i-1].append(terrain_code[i])
+    print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
+""" 
+# print last entry of returned list for debugging purposes
+N = 2 #len(returned_list[-1])
+L = len(returned_list)
+for i in range(N):
+    for j in range(7):
+        print(returned_list[L-1][i][j]) """
 
