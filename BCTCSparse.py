@@ -3,18 +3,62 @@
 # The BC Terrain Classification System is a scheme designed for the classification of 
 # surficial materials, landforms and geomorphological processes of a mappable area.
 #
-# INPUT This script takes as input a single string of alphanumeric characters which represent
+# This script takes as input a single string of alphanumeric characters which represent
 # the characteristics of terrain encoded by the classification system and returns a list
 # (or lists) containging plain english language descriptions of the terrain.
 #
 # If the terrain code contains only one terrain type it will return a single list with
-# six plain-english descriptors
+# seven plain-english descriptors
 #
+# INPUT:
+# ======
+# A single string representing the code describing terrain features codified by the BC 
+# Terrain Classification System, Version 2, 1997. 
+#
+# OUTPUTS:
+# =======
 # ['Surficial Material', 'Surface Expression', 'Texture', 'Geomorphological Proccess(es)', 
-#   'Extent', 'Coverage Relative to next Terrain Type'] 
+#   'Extent', 'Coverage Relative to next Terrain Type', 'Unparsed Terms'] 
 # 
+#
+# OUTPUT DESCRIPTIONS:
+# ====================
+# 'Surficial Material': (One or Two upper case letters) classified according to mode of deposition
+#
+# 'Surface Expression': (1-3 lower case letters) descrbing form/shape of land surface or
+# thickness of materials.
+#
+# 'Texture': (one to three lower case letters) describes the size, roundness and 
+# sorting of particles in mineral sediments and the fiber content of organic materials.
+#
+# 'Geomorphological Processes': (1-3 upper case letters with lowercase subclass codes) describes geomorphological 
+# processes that are modifying either surficial materials or landforms
+#
+# 'Extent': Describes whether the terrain is continuous of discontinuous over the unit.
+#
+# 'Coverage Relative to Next Terrain Term': If the terrain code describes more than one terrain type, this value
+# describes whether this terrain's extent(coverage) is greater than, much greater than or equal to the following terrain
+#
+# 'Unparsed Terms': this returns a string descrbing any coded characters that were unable to be parsed because they were 
+# not found in the associated BCTCS dictionaries.  This may due to incorrect input or order of coded characte rs
+#
 # If the terrain code does not specify any of the descriptors, the returned descriptor will
 # simply be '' for that value.
+#
+# EXAMPLE 1: Typical Terrain Code
+# ===============================
+# Input = gFGs-F 
+# Output = [['Glaciofluvial Material', 'steep slope', 'Gravel', 'Slow mass movements ', 'continuous', '', '']]
+#
+# EXAMPLE 2: Terrain Code Descrbing Multiple Terrain Types 
+# ========================================================
+# Input = Rhk/Cv 
+# Output: [['Bedrock', 'hummock(s) moderately steep slope', '', '', 'continuous', 'greater extent', ''], ['Colluvium', 'veneer', '', '', 'continuous', '', '']]
+#
+# EXAMPLE 3: Attempted parsing for a string that has no associated values in the BCTCS System
+# ===========================================================================================
+# Input =  oNTA 
+# [['', '', '', '', 'continuous', '', 'NTA: undefined surficial material code; o: undefined surface expression codes']]
 #
 # Author: Pete Carvalho Apr 25, 2023
 
@@ -266,18 +310,26 @@ def BCTCSparse(terrain_code):
     for i in range(len(terrain_code)):
         # if the current character is "/" or "=" and not the first character of terrain_code
         if terrain_code[i] in ["/", "="] and i != 0:
-            # split the string at the current index and append it to terrain_code_split
-            terrain_code_split.append(terrain_code[current_index:i+1])
-            # update current_index to be the index after the current split character
-            current_index = i + 1
+            #check for "double //" and perform that case, or single case if not double '//'
+            if i < len(terrain_code) - 1 and terrain_code[i+1] == '/':
+                terrain_code_split.append(terrain_code[current_index:i+2])
+                current_index = i + 2
+            else:
+                # split the string at the current index and append it to terrain_code_split
+                terrain_code_split.append(terrain_code[current_index:i+1])
+                # update current_index to be the index after the current split character
+                current_index = i + 1
 
     # if there are characters remaining in terrain_code, append them to terrain_code_split
     if current_index != len(terrain_code):
         terrain_code_split.append(terrain_code[current_index:])
 
-    # print the resulting list
+    # strip any blank entries before moving on
+    terrain_code_split = [item for item in terrain_code_split if item.strip()]
+    
+    # DEBUGGING print the resulting list
     print(terrain_code_split)
-
+     
     # create a new list for each item in the terrain_code_split list
     new_list = []
     for string in terrain_code_split:
@@ -299,10 +351,12 @@ def BCTCSparse(terrain_code):
         
         for i in range(len(string)):
             if string[i].isupper():
-                if i+1 < len(string) and string[i+1].isupper():
-                    first_val += string[i:i+2]
-                else:
-                    first_val += string[i]
+                first_val = string[i]
+                for j in range(i+1, len(string)):
+                    if string[j].isupper():
+                        first_val += string[j]
+                    else:
+                        break
                 break
     
         # *SURFACE EXPRESSION*  assign the second value
@@ -334,13 +388,14 @@ def BCTCSparse(terrain_code):
             fourth_val = re.sub('[0-9/=-]', '', fourth_val)
 
         # *CONTINUITY* assign the fifth value
+        fifth_val = ''
         if string[0] == '/':
             fifth_val = "discontinuous"
         else:
             fifth_val = "continuous"
 
         # *EXTENT RELATIVE TO NEXT TERRAIN TYPE* assign the sixth value (terrain extent relative to the following terrain)
-        sixth_val = ""
+        sixth_val = ''
         if string[-1] == "=":
             sixth_val = "equal extent"
         elif string[-1] == "/":
@@ -352,7 +407,9 @@ def BCTCSparse(terrain_code):
             sixth_val = string[-1]
 
         # add the values to the new list
-        new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val])
+        new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val, ''])
+       
+       # DEBUGGING PRINT UPDATES
         print(new_list)
        # print(new_list[0])
        # print(new_list[0][0][:2])
@@ -381,6 +438,9 @@ def BCTCSparse(terrain_code):
             if single_letter in surficial_material_terms:
                 # Add the associated value to new_first_val
                 first_val += surficial_material_terms[single_letter]
+            else:
+                # if the code is not found in dictionary, make note of this
+                new_list[i][6] += upper_case_letters + ': undefined surficial material code; '
 
         elif num_upper_case_letters == 2:
             # Get the two uppercase letters
@@ -390,14 +450,49 @@ def BCTCSparse(terrain_code):
             if two_letters in surficial_material_terms:
                 # Add the associated value to new_first_val
                 first_val += surficial_material_terms[two_letters]
-    
+            else:
+                # if the code is not found in dictionary, make note of this
+                 new_list[i][6] = new_list[i][6] + two_letters + ': undefined surficial material code; '
+        elif num_upper_case_letters == 0:
+            new_list[i][6] = 'blank surficial material code; '
+        elif num_upper_case_letters > 2:
+            new_list[i][6] = ''.join(upper_case_letters) + ': undefined surficial material code; '
+
         new_list[i][0] = first_val
         
         # SURFACE EXPRESSION CODE INTERPRETATION
+        # first update str to remove any code items not in surface expression dictionary and made note
+        code_not_found = []
+        new_str = ""
+        for c in new_list[i][1]:
+            if c not in surface_expression_terms:
+                code_not_found.append(c)
+            else:
+                new_str += c
+
+        if len(code_not_found) > 0:
+            undefined_str = ' '.join([str(elem) for elem in code_not_found])
+            new_list[i][6] += undefined_str + ': undefined surface expression codes; '
+        new_list[i][1] = new_str
+        
         # Replace the second value with the associated value in the surface_expression_terms dictionary for each character
         new_list[i][1] = ' '.join([surface_expression_terms[c] if c in surface_expression_terms else c for c in new_list[i][1]])
 
         # TEXTURE CODE INTERPRETATION
+        # first update str to remove any code items not in texture dictionary and made note
+        code_not_found = []
+        new_str = ""
+        for c in new_list[i][2]:
+            if c not in textural_terms:
+                code_not_found.append(c)
+            else:
+                new_str += c
+
+        if len(code_not_found) > 0:
+            undefined_str = ' '.join([str(elem) for elem in code_not_found])
+            new_list[i][6] += undefined_str + ': undefined surface expression codes; '
+        new_list[i][2] = new_str
+        
         # Replace the third value in each list with the associated value in the textural_terms dictionary for each character
         new_list[i][2] = ' '.join([textural_terms[c] if c in textural_terms else c for c in new_list[i][2]])
 
@@ -405,7 +500,17 @@ def BCTCSparse(terrain_code):
         # Replace 4th value w the associated value in the geomorphological_process_terms dictionary
         # Initialize new_geomorph to empty string
         new_geomorph = ''
+        undefined_str = ''
+        undefined_geomorph_process_terms = ''
+        for char in new_list[i][3]:
+            if char.isupper() and char not in geomorphological_process_terms:
+                undefined_geomorph_process_terms += char + ' '  
+        new_list[i][3] = ''.join([char for char in new_list[i][3] if char.upper() in geomorphological_process_terms])
 
+        if undefined_geomorph_process_terms:
+            new_list[i][6] += undefined_geomorph_process_terms[:-1] + ': undefined geomorphological process terms; '
+
+        
         # Loop through each character in new_list[i][3]
         for char in new_list[i][3]:
             # If character is uppercase, add the associated term from geomorphological_process_terms
@@ -414,7 +519,8 @@ def BCTCSparse(terrain_code):
             # If character is lowercase and follows an 'F', add associated term from slow_mass_movement_F_subclass_terms
             elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'F':
                 new_geomorph += slow_mass_movement_F_subclass_terms.get(char, char+'*') + ' '
-            # If character is lowercase and follows an 'R', add associated term from rapid_mass_movement_R_subclass_terms
+                if slow_mass_movement_F_subclass_terms.get(char, 1) == 1:
+                    new_list[i][6] += char + ': undefined geomorphological subclass modifier for F(slow mass movements)'                                # If character is lowercase and follows an 'R', add associated term from rapid_mass_movement_R_subclass_terms
             elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'R':
                 new_geomorph += rapid_mass_movement_R_subclass_terms.get(char, char+'*') + ' '
             # If character is lowercase and follows an 'A', add associated term from snow_avalanches_A_subclass_terms
@@ -429,6 +535,10 @@ def BCTCSparse(terrain_code):
 
         #update list with english geomorph terms     
         new_list[i][3] = new_geomorph
-        
+
+        # check the potential error string and remove the training two characters if there potential errors (string clean-up before returning)
+        if new_list[i][6][-2:] == ', ' or new_list[i][6][-2:] == '; ':
+            new_list[i][6] = new_list[i][6][:-2]
+
     return(new_list)
 
