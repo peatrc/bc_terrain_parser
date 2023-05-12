@@ -587,7 +587,7 @@ class Terrain:
             # check the potential error string and remove the training two characters if there potential errors (string clean-up before returning)
             if new_list[i][6][-2:] == ', ' or new_list[i][6][-2:] == '; ':
                 new_list[i][6] = new_list[i][6][:-2]
-
+        print(new_list)
         return(new_list)
 
     def __len__(self):
