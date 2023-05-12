@@ -61,7 +61,7 @@ terrain_code.append('wowGIBBErish/112rz-APEz$!@')
 returned_list = []
 for i in range(1, len(terrain_code)):
     print(terrain_code[i])
-    returned_list.append(BCTCS.Terrain(terrain_code[i]))
+    returned_list.append(BCTCS.Terrain(terrain_code[i]).parsed)
     #returned_list[i-1].append(terrain_code[i])
     print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
 #BCTCS()
