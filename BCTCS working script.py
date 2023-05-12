@@ -39,7 +39,7 @@
 # downslope failures (F) that are no longer active (^I)
 
 import csv
-from BCTCSparse import BCTCSparse
+#from BCTCSparse import BCTCSparse
 import BCTCS
 
 
@@ -58,6 +58,7 @@ terrain_code.append('NT-FqYAY')
 terrain_code.append('wowGIBBErish/112rz-APEz$!@')
 
 
+
 returned_list = []
 for i in range(1, len(terrain_code)):
     print(terrain_code[i])
@@ -65,9 +66,9 @@ for i in range(1, len(terrain_code)):
     #returned_list[i-1].append(terrain_code[i])
     print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
 #BCTCS()
-returned_list = []
-returned_list = BCTCSparse(terrain_code[1])
-print(returned_list, terrain_code[1])
+#returned_list = []
+#returned_list = BCTCSparse(terrain_code[1])
+print(returned_list[0], terrain_code[1])
 """ 
 # print last entry of returned list for debugging purposes
 N = 2 #len(returned_list[-1])
