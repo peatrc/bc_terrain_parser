@@ -329,266 +329,273 @@ class Terrain:
         # SPLIT THE CODE WHEN MULTIPLE TERRAIN TYPES ARE CONTAINED IN A CODE
         # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
         
-        # initialize an empty list called terrain_code_split
-        terrain_code_split = []
+        try:
+            # initialize an empty list called terrain_code_split
+            terrain_code_split = []
 
-        # initialize a variable called current_index and set its value to 0
-        current_index = 0
+            # initialize a variable called current_index and set its value to 0
+            current_index = 0
 
-        # loop through the indices of terrain_code
-        for i in range(len(terrain_code)):
-            # if the current character is "/" or "=" and not the first character of terrain_code
-            if terrain_code[i] in ["/", "="] and i != 0:
-                #check for "double //" and perform that case, or single case if not double '//'
-                if i < len(terrain_code) - 1 and terrain_code[i+1] == '/':
-                    terrain_code_split.append(terrain_code[current_index:i+2])
-                    current_index = i + 2
-                else:
-                    # split the string at the current index and append it to terrain_code_split
-                    terrain_code_split.append(terrain_code[current_index:i+1])
-                    # update current_index to be the index after the current split character
-                    current_index = i + 1
+            # loop through the indices of terrain_code
+            for i in range(len(terrain_code)):
+                # if the current character is "/" or "=" and not the first character of terrain_code
+                if terrain_code[i] in ["/", "="] and i != 0:
+                    #check for "double //" and perform that case, or single case if not double '//'
+                    if i < len(terrain_code) - 1 and terrain_code[i+1] == '/':
+                        terrain_code_split.append(terrain_code[current_index:i+2])
+                        current_index = i + 2
+                    else:
+                        # split the string at the current index and append it to terrain_code_split
+                        terrain_code_split.append(terrain_code[current_index:i+1])
+                        # update current_index to be the index after the current split character
+                        current_index = i + 1
 
-        # if there are characters remaining in terrain_code, append them to terrain_code_split
-        if current_index != len(terrain_code):
-            terrain_code_split.append(terrain_code[current_index:])
+            # if there are characters remaining in terrain_code, append them to terrain_code_split
+            if current_index != len(terrain_code):
+                terrain_code_split.append(terrain_code[current_index:])
 
-        # strip any blank entries before moving on
-        terrain_code_split = [item for item in terrain_code_split if item.strip()]
+            # strip any blank entries before moving on
+            terrain_code_split = [item for item in terrain_code_split if item.strip()]
+            
+            # DEBUGGING print the resulting list
+            print(terrain_code_split)
+
+            ###END SPLITTING SECTION
+
+            # PARSE/INTERPRET CODES IN THIS SECTION
+            # Take each split code and make a list containing 6 descriptors describing the terrain
+            # and a 7th descriptor that notes any code characters that are not defined in the BCTCS
         
-        # DEBUGGING print the resulting list
-        print(terrain_code_split)
+            # create a new list for each item in the terrain_code_split list
+            new_list = []
+            for string in terrain_code_split:
+                # initialize the values for the new list
+                first_val = ""
+                second_val = ""
+                third_val = ""
+                fourth_val = ""
+                fifth_val = ""
 
-        ###END SPLITTING SECTION
+                # *SURFICIAL MATERIAL*  check the first uppercase letter in the string
+                first_val = ""
 
-        # PARSE/INTERPRET CODES IN THIS SECTION
-        # Take each split code and make a list containing 6 descriptors describing the terrain
-        # and a 7th descriptor that notes any code characters that are not defined in the BCTCS
-    
-        # create a new list for each item in the terrain_code_split list
-        new_list = []
-        for string in terrain_code_split:
-            # initialize the values for the new list
-            first_val = ""
-            second_val = ""
-            third_val = ""
-            fourth_val = ""
-            fifth_val = ""
+                # this conditional makes sure to include Bedrock modifier codes (if they exist)
+                # this occurs when 'R' is preded by lowercase chars that exist in bedrock_R_subclass_terms dictionary
+                if string.find("R") >= 2:
+                    prev_two = string[string.find("R")-2:string.find("R")]
+                    if prev_two in bedrock_R_subclass_terms.keys():
+                        first_val += prev_two
 
-            # *SURFICIAL MATERIAL*  check the first uppercase letter in the string
-            first_val = ""
+                # get all characters before the first hyphen
+                pre_hyphen = string.split('-')[0] if '-' in string else string
 
-            # this conditional makes sure to include Bedrock modifier codes (if they exist)
-            # this occurs when 'R' is preded by lowercase chars that exist in bedrock_R_subclass_terms dictionary
-            if string.find("R") >= 2:
-                prev_two = string[string.find("R")-2:string.find("R")]
-                if prev_two in bedrock_R_subclass_terms.keys():
-                    first_val += prev_two
-
-            # get all characters before the first hyphen
-            pre_hyphen = string.split('-')[0] if '-' in string else string
-
-            # get the first uppercase letter or consecutive uppercase letters
-            first_val = ''
+                # get the first uppercase letter or consecutive uppercase letters
+                first_val = ''
+                
+                for i in range(len(pre_hyphen)):
+                    if pre_hyphen[i].isupper():
+                        first_val = pre_hyphen[i]
+                        for j in range(i+1, len(pre_hyphen)):
+                            if pre_hyphen[j].isupper():
+                                first_val += pre_hyphen[j]
+                            else:
+                                break
+                        break
             
-            for i in range(len(pre_hyphen)):
-                if pre_hyphen[i].isupper():
-                    first_val = pre_hyphen[i]
-                    for j in range(i+1, len(pre_hyphen)):
-                        if pre_hyphen[j].isupper():
-                            first_val += pre_hyphen[j]
-                        else:
-                            break
-                    break
-        
-            # *SURFACE EXPRESSION*  assign the second value
-            upper_found = False
-            second_val = ''
-            for char in string:
-                if char.isupper():
-                    upper_found = True
-                elif char.islower() and upper_found and '-' not in string[string.index(char)-1:string.index(char)]:
-                    second_val += char
-                elif char == '-':
-                    upper_found = False
-            
-            # *TEXTURE* assign the third value
-            third_val = ""
-            for char in string:
-                if char.isupper():
-                    break
-                elif char.islower():
-                    third_val += char
-            
-            # *GEOMORPHOLOGICAL PROCESS* assign the fourth value
-            fourth_val = ""
-            # strip the '-' that indicates the following chars codify geomorph processes
-            if '-' in string:
-                i = string.index('-')
-                fourth_val = string[i:]
-                #remove / or = or numeric data
-                fourth_val = re.sub('[0-9/=-]', '', fourth_val)
+                # *SURFACE EXPRESSION*  assign the second value
+                upper_found = False
+                second_val = ''
+                for char in string:
+                    if char.isupper():
+                        upper_found = True
+                    elif char.islower() and upper_found and '-' not in string[string.index(char)-1:string.index(char)]:
+                        second_val += char
+                    elif char == '-':
+                        upper_found = False
+                
+                # *TEXTURE* assign the third value
+                third_val = ""
+                for char in string:
+                    if char.isupper():
+                        break
+                    elif char.islower():
+                        third_val += char
+                
+                # *GEOMORPHOLOGICAL PROCESS* assign the fourth value
+                fourth_val = ""
+                # strip the '-' that indicates the following chars codify geomorph processes
+                if '-' in string:
+                    i = string.index('-')
+                    fourth_val = string[i:]
+                    #remove / or = or numeric data
+                    fourth_val = re.sub('[0-9/=-]', '', fourth_val)
 
-            # *CONTINUITY* assign the fifth value
-            fifth_val = ''
-            if string[0] == '/':
-                fifth_val = "discontinuous"
-            elif string[0] == '':
+                # *CONTINUITY* assign the fifth value
                 fifth_val = ''
-            else:
-                fifth_val = "continuous"
-
-            # *EXTENT RELATIVE TO NEXT TERRAIN TYPE* assign the sixth value (terrain extent relative to the following terrain)
-            sixth_val = ''
-            if string[-1] == "=":
-                sixth_val = "equal extent"
-            elif string[-1] == "/":
-                if len(string) > 1 and string[-2] == "/":
-                    sixth_val = "much greater extent"
+                if string[0] == '/':
+                    fifth_val = "discontinuous"
+                elif string[0] == '':
+                    fifth_val = ''
                 else:
-                    sixth_val = "greater extent"
-            elif string[-1].isdigit():
-                sixth_val = string[-1]
+                    fifth_val = "continuous"
 
-            # add the values to the new list
-            new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val, ''])
-        
-        # DEBUGGING PRINT UPDATES
+                # *EXTENT RELATIVE TO NEXT TERRAIN TYPE* assign the sixth value (terrain extent relative to the following terrain)
+                sixth_val = ''
+                if string[-1] == "=":
+                    sixth_val = "equal extent"
+                elif string[-1] == "/":
+                    if len(string) > 1 and string[-2] == "/":
+                        sixth_val = "much greater extent"
+                    else:
+                        sixth_val = "greater extent"
+                elif string[-1].isdigit():
+                    sixth_val = string[-1]
+
+                # add the values to the new list
+                new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val, ''])
+            
+            # DEBUGGING PRINT UPDATES
+                print(new_list)
+            # print(new_list[0])
+            # print(new_list[0][0][:2])
+
+            # Loop over each list in new_list and replace coded characters with descriptive words in dictionaries
+            
+            for i in range(len(new_list)):
+                
+                # SURFICIAL MATERIAL CODE INTERPRETATION
+                # Replace the first value with the associated value in the surficial_material_terms dictionary
+                first_val = ''
+                if len(new_list[i][0]) > 2 and new_list[i][0][:2] in bedrock_R_subclass_terms:
+                    first_val += bedrock_R_subclass_terms[new_list[i][0][:2]] + ' '
+            
+                # Remove any non-uppercase letters from new_list[i][0]
+                upper_case_letters = [char for char in new_list[i][0] if char.isupper()]
+
+                # Count the number of uppercase letters
+                num_upper_case_letters = len(upper_case_letters)
+
+                if num_upper_case_letters == 1:
+                    # Get the single uppercase letter
+                    single_letter = upper_case_letters[0]
+
+                    # Check if the surficial_material_terms dictionary has a value for that letter
+                    if single_letter in surficial_material_terms:
+                        # Add the associated value to new_first_val
+                        first_val += surficial_material_terms[single_letter]
+                    else:
+                        # if the code is not found in dictionary, make note of this
+                        new_list[i][6] += upper_case_letters + ': undefined surficial material code; '
+
+                elif num_upper_case_letters == 2:
+                    # Get the two uppercase letters
+                    two_letters = ''.join(upper_case_letters)
+
+                    # Check if the surficial_material_terms dictionary has a value for those two letters taken together
+                    if two_letters in surficial_material_terms:
+                        # Add the associated value to new_first_val
+                        first_val += surficial_material_terms[two_letters]
+                    else:
+                        # if the code is not found in dictionary, make note of this
+                        new_list[i][6] = new_list[i][6] + two_letters + ': undefined surficial material code; '
+                elif num_upper_case_letters == 0:
+                    new_list[i][6] = 'blank surficial material code; '
+                elif num_upper_case_letters > 2:
+                    new_list[i][6] = ''.join(upper_case_letters) + ': undefined surficial material code; '
+
+                new_list[i][0] = first_val
+
+                # if there is no terrain material identified, it cannot be continuous, so set blank
+                if first_val == '':
+                    new_list[i][4] = ''
+                
+                # SURFACE EXPRESSION CODE INTERPRETATION
+                # first update str to remove any code items not in surface expression dictionary and made note
+                code_not_found = []
+                new_str = ""
+                for c in new_list[i][1]:
+                    if c not in surface_expression_terms:
+                        code_not_found.append(c)
+                    else:
+                        new_str += c
+
+                if len(code_not_found) > 0:
+                    undefined_str = ' '.join([str(elem) for elem in code_not_found])
+                    new_list[i][6] += undefined_str + ': undefined surface expression codes; '
+                new_list[i][1] = new_str
+                
+                # Replace the second value with the associated value in the surface_expression_terms dictionary for each character
+                new_list[i][1] = ' '.join([surface_expression_terms[c] if c in surface_expression_terms else c for c in new_list[i][1]])
+
+                # TEXTURE CODE INTERPRETATION
+                # first update str to remove any code items not in texture dictionary and made note
+                code_not_found = []
+                new_str = ""
+                for c in new_list[i][2]:
+                    if c not in textural_terms:
+                        code_not_found.append(c)
+                    else:
+                        new_str += c
+
+                if len(code_not_found) > 0:
+                    undefined_str = ' '.join([str(elem) for elem in code_not_found])
+                    new_list[i][6] += undefined_str + ': undefined surface expression codes; '
+                new_list[i][2] = new_str
+                
+                # Replace the third value in each list with the associated value in the textural_terms dictionary for each character
+                new_list[i][2] = ' '.join([textural_terms[c] if c in textural_terms else c for c in new_list[i][2]])
+
+                # GEOMORPHOLOGICAL PROCESSES CODE INTERPRATATION
+                # Replace 4th value w the associated value in the geomorphological_process_terms dictionary
+                # Initialize new_geomorph to empty string
+                new_geomorph = ''
+                undefined_str = ''
+                undefined_geomorph_process_terms = ''
+                for char in new_list[i][3]:
+                    if char.isupper() and char not in geomorphological_process_terms:
+                        undefined_geomorph_process_terms += char + ' '  
+                new_list[i][3] = ''.join([char for char in new_list[i][3] if char.upper() in geomorphological_process_terms])
+
+                if undefined_geomorph_process_terms:
+                    new_list[i][6] += undefined_geomorph_process_terms[:-1] + ': undefined geomorphological process terms; '
+
+                # GEOMORPH SUBCLASS INTERPRETATIONS
+                # Loop through each character in new_list[i][3]
+                for char in new_list[i][3]:
+                    # If character is uppercase, add the associated term from geomorphological_process_terms
+                    if char.isupper():
+                        new_geomorph += geomorphological_process_terms.get(char, char+'*') + ' '
+                    # If character is lowercase and follows an 'F', add associated term from slow_mass_movement_F_subclass_terms
+                    elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'F':
+                        new_geomorph += slow_mass_movement_F_subclass_terms.get(char, char+'*') + ' '
+                        if slow_mass_movement_F_subclass_terms.get(char, 1) == 1:
+                            new_list[i][6] += char + ': undefined geomorphological subclass modifier for F(slow mass movements)'                                # If character is lowercase and follows an 'R', add associated term from rapid_mass_movement_R_subclass_terms
+                    elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'R':
+                        new_geomorph += rapid_mass_movement_R_subclass_terms.get(char, char+'*') + ' '
+                    # If character is lowercase and follows an 'A', add associated term from snow_avalanches_A_subclass_terms
+                    elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'A':
+                        new_geomorph += snow_avalanches_A_subclass_terms.get(char, char+'*') + ' '
+                    # If character is lowercase and follows a 'B', 'I', 'J', or 'M', add associated term from fluvial_B_I_J_M_subclass_terms
+                    elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] in ['B', 'I', 'J', 'M']:
+                        new_geomorph += fluvial_B_I_J_M_subclass_terms.get(char, char+'*') + ' '
+                    # If character is lowercase and follows a 'X' or 'Z', add associated term from permafrost_X_Z_subclass_terms
+                    elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] in ['X', 'Z']:
+                        new_geomorph += permafrost_X_Z_subclass_terms.get(char, char+'*') + ' '
+
+                #update list with english geomorph terms     
+                new_list[i][3] = new_geomorph
+
+                # check the potential error string and remove the training two characters if there potential errors (string clean-up before returning)
+                if new_list[i][6][-2:] == ', ' or new_list[i][6][-2:] == '; ':
+                    new_list[i][6] = new_list[i][6][:-2]
             print(new_list)
-        # print(new_list[0])
-        # print(new_list[0][0][:2])
-
-        # Loop over each list in new_list and replace coded characters with descriptive words in dictionaries
-        
-        for i in range(len(new_list)):
             
-            # SURFICIAL MATERIAL CODE INTERPRETATION
-            # Replace the first value with the associated value in the surficial_material_terms dictionary
-            first_val = ''
-            if len(new_list[i][0]) > 2 and new_list[i][0][:2] in bedrock_R_subclass_terms:
-                first_val += bedrock_R_subclass_terms[new_list[i][0][:2]] + ' '
-        
-            # Remove any non-uppercase letters from new_list[i][0]
-            upper_case_letters = [char for char in new_list[i][0] if char.isupper()]
-
-            # Count the number of uppercase letters
-            num_upper_case_letters = len(upper_case_letters)
-
-            if num_upper_case_letters == 1:
-                # Get the single uppercase letter
-                single_letter = upper_case_letters[0]
-
-                # Check if the surficial_material_terms dictionary has a value for that letter
-                if single_letter in surficial_material_terms:
-                    # Add the associated value to new_first_val
-                    first_val += surficial_material_terms[single_letter]
-                else:
-                    # if the code is not found in dictionary, make note of this
-                    new_list[i][6] += upper_case_letters + ': undefined surficial material code; '
-
-            elif num_upper_case_letters == 2:
-                # Get the two uppercase letters
-                two_letters = ''.join(upper_case_letters)
-
-                # Check if the surficial_material_terms dictionary has a value for those two letters taken together
-                if two_letters in surficial_material_terms:
-                    # Add the associated value to new_first_val
-                    first_val += surficial_material_terms[two_letters]
-                else:
-                    # if the code is not found in dictionary, make note of this
-                    new_list[i][6] = new_list[i][6] + two_letters + ': undefined surficial material code; '
-            elif num_upper_case_letters == 0:
-                new_list[i][6] = 'blank surficial material code; '
-            elif num_upper_case_letters > 2:
-                new_list[i][6] = ''.join(upper_case_letters) + ': undefined surficial material code; '
-
-            new_list[i][0] = first_val
-
-            # if there is no terrain material identified, it cannot be continuous, so set blank
-            if first_val == '':
-                new_list[i][4] = ''
-            
-            # SURFACE EXPRESSION CODE INTERPRETATION
-            # first update str to remove any code items not in surface expression dictionary and made note
-            code_not_found = []
-            new_str = ""
-            for c in new_list[i][1]:
-                if c not in surface_expression_terms:
-                    code_not_found.append(c)
-                else:
-                    new_str += c
-
-            if len(code_not_found) > 0:
-                undefined_str = ' '.join([str(elem) for elem in code_not_found])
-                new_list[i][6] += undefined_str + ': undefined surface expression codes; '
-            new_list[i][1] = new_str
-            
-            # Replace the second value with the associated value in the surface_expression_terms dictionary for each character
-            new_list[i][1] = ' '.join([surface_expression_terms[c] if c in surface_expression_terms else c for c in new_list[i][1]])
-
-            # TEXTURE CODE INTERPRETATION
-            # first update str to remove any code items not in texture dictionary and made note
-            code_not_found = []
-            new_str = ""
-            for c in new_list[i][2]:
-                if c not in textural_terms:
-                    code_not_found.append(c)
-                else:
-                    new_str += c
-
-            if len(code_not_found) > 0:
-                undefined_str = ' '.join([str(elem) for elem in code_not_found])
-                new_list[i][6] += undefined_str + ': undefined surface expression codes; '
-            new_list[i][2] = new_str
-            
-            # Replace the third value in each list with the associated value in the textural_terms dictionary for each character
-            new_list[i][2] = ' '.join([textural_terms[c] if c in textural_terms else c for c in new_list[i][2]])
-
-            # GEOMORPHOLOGICAL PROCESSES CODE INTERPRATATION
-            # Replace 4th value w the associated value in the geomorphological_process_terms dictionary
-            # Initialize new_geomorph to empty string
-            new_geomorph = ''
-            undefined_str = ''
-            undefined_geomorph_process_terms = ''
-            for char in new_list[i][3]:
-                if char.isupper() and char not in geomorphological_process_terms:
-                    undefined_geomorph_process_terms += char + ' '  
-            new_list[i][3] = ''.join([char for char in new_list[i][3] if char.upper() in geomorphological_process_terms])
-
-            if undefined_geomorph_process_terms:
-                new_list[i][6] += undefined_geomorph_process_terms[:-1] + ': undefined geomorphological process terms; '
-
-            # GEOMORPH SUBCLASS INTERPRETATIONS
-            # Loop through each character in new_list[i][3]
-            for char in new_list[i][3]:
-                # If character is uppercase, add the associated term from geomorphological_process_terms
-                if char.isupper():
-                    new_geomorph += geomorphological_process_terms.get(char, char+'*') + ' '
-                # If character is lowercase and follows an 'F', add associated term from slow_mass_movement_F_subclass_terms
-                elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'F':
-                    new_geomorph += slow_mass_movement_F_subclass_terms.get(char, char+'*') + ' '
-                    if slow_mass_movement_F_subclass_terms.get(char, 1) == 1:
-                        new_list[i][6] += char + ': undefined geomorphological subclass modifier for F(slow mass movements)'                                # If character is lowercase and follows an 'R', add associated term from rapid_mass_movement_R_subclass_terms
-                elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'R':
-                    new_geomorph += rapid_mass_movement_R_subclass_terms.get(char, char+'*') + ' '
-                # If character is lowercase and follows an 'A', add associated term from snow_avalanches_A_subclass_terms
-                elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] == 'A':
-                    new_geomorph += snow_avalanches_A_subclass_terms.get(char, char+'*') + ' '
-                # If character is lowercase and follows a 'B', 'I', 'J', or 'M', add associated term from fluvial_B_I_J_M_subclass_terms
-                elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] in ['B', 'I', 'J', 'M']:
-                    new_geomorph += fluvial_B_I_J_M_subclass_terms.get(char, char+'*') + ' '
-                # If character is lowercase and follows a 'X' or 'Z', add associated term from permafrost_X_Z_subclass_terms
-                elif char.islower() and char.isalpha() and new_list[i][3][new_list[i][3].index(char)-1] in ['X', 'Z']:
-                    new_geomorph += permafrost_X_Z_subclass_terms.get(char, char+'*') + ' '
-
-            #update list with english geomorph terms     
-            new_list[i][3] = new_geomorph
-
-            # check the potential error string and remove the training two characters if there potential errors (string clean-up before returning)
-            if new_list[i][6][-2:] == ', ' or new_list[i][6][-2:] == '; ':
-                new_list[i][6] = new_list[i][6][:-2]
-        print(new_list)
-        return(new_list)
+            if new_list[i][6] == '':
+                return(new_list)
+            else:
+                raise ValueError(new_list[i][6])
+        except ValueError as e:
+            print('Exception Raised from unparsed terms from input: ', e)
 
     def __len__(self):
         return len(self.parsed)
