@@ -60,21 +60,23 @@ terrain_code.append('wowGIBBErish/112rz-APEz$!@')
 
 
 returned_list = []
-for i in range(1, len(terrain_code)):
-    print(terrain_code[i])
-    returned_list.append(BCTCS.Terrain(terrain_code[i]).parsed)
-    #returned_list[i-1].append(terrain_code[i])
-    print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
-#BCTCS()
-#returned_list = []
-#returned_list = BCTCSparse(terrain_code[1])
-print(returned_list[0], terrain_code[1])
-""" 
-# print last entry of returned list for debugging purposes
-N = 2 #len(returned_list[-1])
-L = len(returned_list)
-for i in range(N):
-    for j in range(7):
-        print(returned_list[L-1][i][j]) """
-#print('Type of terrain_code:', type(terrain_code))
-
+try:
+    for i in range(1, len(terrain_code)):
+        print(terrain_code[i])
+        returned_list.append(BCTCS.Terrain(terrain_code[i]).parsed)
+        #returned_list[i-1].append(terrain_code[i])
+        print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
+    #BCTCS()
+    #returned_list = []
+    #returned_list = BCTCSparse(terrain_code[1])
+    print(returned_list[0], terrain_code[1])
+    """ 
+    # print last entry of returned list for debugging purposes
+    N = 2 #len(returned_list[-1])
+    L = len(returned_list)
+    for i in range(N):
+        for j in range(7):
+            print(returned_list[L-1][i][j]) """
+    #print('Type of terrain_code:', type(terrain_code))
+except ValueError as e:
+    print('Exception Raised from unparsed terms from input: ', e)
