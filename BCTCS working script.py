@@ -43,24 +43,24 @@ import csv
 import BCTCS
 
 
-
-terrain_code = []
-
-with open('ChilliwackTerrainCodes.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile)
-    for row in reader:
-        terrain_code.append(row[1])
-
-# hardcode a string to parse as the last entry
-terrain_code.append('spRks//zCb-Fe')
-terrain_code.append('oNTA')
-terrain_code.append('NT-FqYAY')
-terrain_code.append('wowGIBBErish/112rz-APEz$!@')
-
-
-
-returned_list = []
 try:
+    terrain_code = []
+
+    with open('ChilliwackTerrainCodes.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            terrain_code.append(row[1])
+
+    # hardcode a string to parse as the last entry
+    terrain_code.append('spRks//zCb-Fe')
+    terrain_code.append('oNTA')
+    terrain_code.append('NT-FqYAY')
+    terrain_code.append('wowGIBBErish/112rz-APEz$!@')
+
+
+
+    returned_list = []
+
     for i in range(1, len(terrain_code)):
         print(terrain_code[i])
         returned_list.append(BCTCS.Terrain(terrain_code[i]).parsed)
