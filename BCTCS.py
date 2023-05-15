@@ -330,6 +330,8 @@ class Terrain:
         # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
         
         try:
+            #whether unparsed items will break the program (1) or run program and display unparsed items (0)
+            strictmode=0
             # initialize an empty list called terrain_code_split
             terrain_code_split = []
 
@@ -590,10 +592,12 @@ class Terrain:
                     new_list[i][6] = new_list[i][6][:-2]
             print(new_list)
             
+            #return as normal if there is no record of unparsed terms in new_list[i][6]
             if new_list[i][6] == '':
                 return(new_list)
-            else:
-                raise ValueError(new_list[i][6])
+            else: # goes here if there were unparsed items, treated differently whether it is in strict mode or not
+                if strictmode == 0:
+                    raise ValueError(new_list[i][6])
         except ValueError as e:
             print('Exception Raised from unparsed terms from input: ', e)
 
