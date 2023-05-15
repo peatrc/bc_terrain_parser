@@ -596,10 +596,13 @@ class Terrain:
             if new_list[i][6] == '':
                 return(new_list)
             else: # goes here if there were unparsed items, treated differently whether it is in strict mode or not
-                if strictmode == 0:
-                    raise ValueError(new_list[i][6])
+                raise ValueError(new_list[i][6])
+
         except ValueError as e:
             print('Exception Raised from unparsed terms from input: ', e)
+            if strictmode == 0:
+                return(new_list)
+
 
     def __len__(self):
         return len(self.parsed)
