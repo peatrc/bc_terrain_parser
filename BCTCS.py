@@ -86,22 +86,22 @@ textural_terms = {
 
 # Dictionary for Surficial Material Terms //**** Must work on Active/Inactive Qualifiers
 surficial_material_terms = {
-    'A': 'Anthropogenic Material',
-    'C': 'Colluvium',
-    'D': 'Weathered Bedrock (in situ)',
-    'E': 'Eolian Material',
-    'F': 'Fluvial Material',
-    'FG': 'Glaciofluvial Material',
-    'I': 'Ice',
-    'L': 'Lacustrine Material',
-    'LG': 'Glaciolacustrine Material',
-    'M': 'Morainal Material(Till)',
-    'O': 'Organic Material',
-    'R': 'Bedrock',
-    'U': 'Undifferentiated Materials',
-    'V': 'Volcanic Material',
-    'W': 'Marine Material',
-    'WG': 'Glaciomarine Material',
+    'A': 'Anthropogenic Material (Active)',
+    'C': 'Colluvium (Active)',
+    'D': 'Weathered Bedrock (in situ) (Active)',
+    'E': 'Eolian Material (Inactive)',
+    'F': 'Fluvial Material (Inactive)',
+    'FG': 'Glaciofluvial Material (Inactive)',
+    'I': 'Ice (Active)',
+    'L': 'Lacustrine Material (Inactive)',
+    'LG': 'Glaciolacustrine Material (Inactive)',
+    'M': 'Morainal Material(Till) (Inactive)',
+    'O': 'Organic Material (Active)' ,
+    'R': 'Bedrock (Activity status n/a)',
+    'U': 'Undifferentiated Materials (Activity status n/a)',
+    'V': 'Volcanic Material (Inactive)',
+    'W': 'Marine Material (Inactive)',
+    'WG': 'Glaciomarine Material (Inactive)',
 }
 
 # Dictionary for Surface Expression Terms
@@ -127,27 +127,27 @@ surface_expression_terms = {
 
 # Dictionary for Geomorphological Process Terms
 geomorphological_process_terms = {
-    'D': 'Deflation',
-    'K': 'Karst processes',
-    'P': 'Piping',
-    'V': 'Gully erosion',
-    'W': 'Washing',
-    'B': 'Braiding channel',
-    'I': 'Irregularly sinuous channel',
-    'J': 'Anastomising channel',
-    'M': 'Meandering channel',
-    'A': 'Snow avalanches',
-    'F': 'Slow mass movements',
-    'R': 'Rapid mass movements',
-    'C': 'Cryoturbation',
-    'N': 'Nivation',
-    'S': 'Solifluction',
-    'Z': 'General periglacial process',
-    'X': 'Permafrost process',
-    'E': 'Channeled by meltwater',
-    'H': 'Kettled',
-    'U': 'Inundation',
-    'L': 'Surface seepage',
+    'D': 'Deflation (Active)',
+    'K': 'Karst processes (Active)',
+    'P': 'Piping (Active)',
+    'V': 'Gully erosion (Active)',
+    'W': 'Washing (Active)',
+    'B': 'Braiding channel (Active)',
+    'I': 'Irregularly sinuous channel (Active)',
+    'J': 'Anastomising channel (Active)',
+    'M': 'Meandering channel (Active)',
+    'A': 'Snow avalanches (Active)',
+    'F': 'Slow mass movements (Active)',
+    'R': 'Rapid mass movements (Active)',
+    'C': 'Cryoturbation (Active)',
+    'N': 'Nivation (Active)',
+    'S': 'Solifluction (Active)',
+    'Z': 'General periglacial process (Active)',
+    'X': 'Permafrost process (Active)',
+    'E': 'Channeled by meltwater (Inactive)',
+    'H': 'Kettled (Inactive)',
+    'U': 'Inundation (Active)',
+    'L': 'Surface seepage (Active)',
 }
 
 # Dictionary for Subclass of (-F)Geomorphological Process Slow Mass Movement Terms
@@ -330,7 +330,7 @@ class Terrain:
         # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
         
         #whether unparsed items will break the program (1) or run program and display unparsed items (0)
-        strictmode=1
+        strictmode=0
         # initialize an empty list called terrain_code_split
         terrain_code_split = []
 
@@ -471,7 +471,19 @@ class Terrain:
                 first_val += bedrock_R_subclass_terms[new_list[i][0][:2]] + ' '
         
             # Remove any non-uppercase letters from new_list[i][0]
-            upper_case_letters = [char for char in new_list[i][0] if char.isupper()]
+            upper_case_letters = ''.join([char for char in new_list[i][0] if char.isupper()])
+
+            # Check for an activity modifier (I or A) then strip them from upper_case_letters and process 
+            # the modifiers after terrain expression interpretation is complete
+            activity_modifier = ''
+            # debugging --print(upper_case_letters, " ", len(upper_case_letters), type(upper_case_letters))
+            if len(upper_case_letters) > 1:
+                if 'I' in upper_case_letters[1:]:
+                    activity_modifier = 'I'
+                    upper_case_letters = upper_case_letters.replace('I', '')
+                elif 'A' in upper_case_letters[1:]:
+                    activity_modifier = 'A'
+                    upper_case_letters = upper_case_letters.replace('A', '')
 
             # Count the number of uppercase letters
             num_upper_case_letters = len(upper_case_letters)
@@ -503,6 +515,15 @@ class Terrain:
                 new_list[i][6] = 'blank surficial material code; '
             elif num_upper_case_letters > 2:
                 new_list[i][6] = ''.join(upper_case_letters) + ': undefined surficial material code; '
+
+            # Check is there was an Activity modifier in the code, and switch the activity status of the parsed
+            # code accordingly
+            if activity_modifier == 'A' and '(Inactive)' in first_val:
+                first_val = first_val.replace('(Inactive)', '(Active)')
+            elif activity_modifier == 'I' and '(Active)' in first_val:
+                first_val = first_val.replace('(Active)', '(Inactive)')
+            if (activity_modifier == 'A' or activity_modifier == 'I') and '(Activity status n/a)' in first_val:
+                new_list[i][6] += activity_modifier + ": Activity modifier attempting to modify a terrain type where Activity Status is n/a; "
 
             new_list[i][0] = first_val
 
@@ -540,7 +561,7 @@ class Terrain:
 
             if len(code_not_found) > 0:
                 undefined_str = ' '.join([str(elem) for elem in code_not_found])
-                new_list[i][6] += undefined_str + ': undefined surface expression codes; '
+                new_list[i][6] += undefined_str + ': undefined texture codes; '
             new_list[i][2] = new_str
             
             # Replace the third value in each list with the associated value in the textural_terms dictionary for each character
@@ -594,7 +615,8 @@ class Terrain:
         if any(len(sublist[6]) > 0 for sublist in new_list):
             error_msg = ''.join(sublist[6] for sublist in new_list if len(sublist[6]) > 0)
             print(error_msg)
-            raise ValueError(error_msg)
+            if strictmode == 1:
+                raise ValueError(error_msg)
         else: 
             return(new_list)
         
