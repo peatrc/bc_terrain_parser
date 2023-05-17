@@ -301,42 +301,50 @@ bedrock_R_subclass_terms = {
 class Terrain:
     '''British Columbia Terrain Classification System (1997) parser
     '''
-    def __init__(self, instr:str)->None:
+    def __init__(self, instr:str, strictmode:int)->None:
         '''
         instr : str
             British Columbia Terrain System classification string
+
+        strictmode : int
+            Boolean indicating strict mode on/off
         '''
         self.instr = instr
+        self.strictmode = strictmode
 
     @property
-    def parsed(self, terrain_code : str = None) -> list :
+    def parsed(self, terrain_code : str = None, strictmode: int = 0) -> list :
         '''
         Returns a list of lists. Each element contains seven sub elements representing
-        ['Surficial Material', 'Surface Expression', 'Texture', 'Geomorphological Proccess(es)', 'Extent', 'Coverage Relative to next Terrain Type', 'Unparsed Terms'] 
+        ['Surficial Material', 'Surface Expression', 'Texture', 
+        'Geomorphological Proccess(es)', 'Extent', 'Coverage Relative to next Terrain Type',
+        'Unparsed Terms'] 
+        
         terrain_code : str
             BC Terrain Classification String
+        
+        strictmode : int
+            Boolean indicating strict mode on/off
+        
         '''
          #This is just the BCTCSParse function
         if not terrain_code:
             terrain_code = self.instr
-        '''Returns a list of lists. Each list contains seven elements corresponding
-        ['Surficial Material', 'Surface Expression', 'Texture', 'Geomorphological Proccess(es)', 'Extent', 'Coverage Relative to next Terrain Type', 'Unparsed Terms'] 
-        
-        terrain_code : str
-            BC Terrain classification string
-        '''
+       
+        if not strictmode:
+            strictmode = self.strictmode
 
-        # SPLIT THE CODE WHEN MULTIPLE TERRAIN TYPES ARE CONTAINED IN A CODE
-        # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
-        
+               
         #whether unparsed items will break the program (1) or run program and display unparsed items (0)
-        strictmode=0
+        #strictmode=0
         # initialize an empty list called terrain_code_split
         terrain_code_split = []
 
         # initialize a variable called current_index and set its value to 0
         current_index = 0
-
+        
+        # SPLIT THE CODE WHEN MULTIPLE TERRAIN TYPES ARE CONTAINED IN A CODE
+        # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
         # loop through the indices of terrain_code
         for i in range(len(terrain_code)):
             # if the current character is "/" or "=" and not the first character of terrain_code

@@ -63,10 +63,11 @@ try:
 
     for i in range(1, len(terrain_code)):
         print(terrain_code[i])
-        returned_list.append(BCTCS.Terrain(terrain_code[i]).parsed)
+        returned_list.append(BCTCS.Terrain(terrain_code[i],1).parsed)
         #returned_list[i-1].append(terrain_code[i])
         print('Output List for input string = ', terrain_code[i], '\n', returned_list[i-1])
     #BCTCS()
+    BCTCS.Terrain.parsed
     #returned_list = []
     #returned_list = BCTCSparse(terrain_code[1])
     print(returned_list[0], terrain_code[1])
@@ -80,3 +81,5 @@ try:
     #print('Type of terrain_code:', type(terrain_code))
 except ValueError as e:
     print('Exception Raised from unparsed terms from input: ', e)
+
+#`help(BCTCS)
