@@ -665,12 +665,12 @@ class Terrain:
         return(len(self.parsed))
     
     def max(self):
-        '''Returns the list of descriptors of the first terrain type of the given terrain code '''
-        return self.parsed[0]
-    
-    def min(self):
         '''Returns the list of descriptors of the last terrain type of the given terrain code'''
         return self.parsed[-1]
+    
+    def min(self):
+        '''Returns the list of descriptors of the first terrain type of the given terrain code'''
+        return self.parsed[0]
 
     def json(self):
         '''Terrain code attributes returned as a dictionary with keys:
