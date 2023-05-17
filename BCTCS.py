@@ -301,7 +301,7 @@ bedrock_R_subclass_terms = {
 class Terrain:
     '''British Columbia Terrain Classification System (1997) parser
     '''
-    def __init__(self, instr:str, strictmode:int)->None:
+    def __init__(self, instr:str, strictmode:int=0)->None:
         '''
         instr : str
             British Columbia Terrain System classification string
@@ -643,32 +643,52 @@ class Terrain:
 
 
     def __len__(self):
+        '''Returns the amount of terrain types in the given terrain code'''
         return len(self.parsed)
     
     def __getitem__(self, key):
+        '''Returns only the discriptors of the terrain type given in the key
+        e.g., if the key is 0 the first terrain type is returned
+        if the key is 1 the second terrain type is returned
+        if the key is n, the n+1 terrain type is returned'''
         return(self.parsed[key])
     
     def __str__(self):
+        '''Returns one string of the descriptors of all terrain types of the given terrain code.
+        If there are multiple types of terrain in the code (i.e., it is a composite code) then
+        the descriptors for each terrain type are separated by a ' / '.
+        '''
         return ' / '.join([' '.join([y for y in x if y]) for x in self.parsed])
 
     def __int__(self):
+        '''Returns the amount of terrain types in the given terrain code'''
         return(len(self.parsed))
     
     def max(self):
+        '''Returns the list of descriptors of the first terrain type of the given terrain code '''
         return self.parsed[0]
     
     def min(self):
+        '''Returns the list of descriptors of the last terrain type of the given terrain code'''
         return self.parsed[-1]
 
     def json(self):
+        '''Terrain code attributes returned as a dictionary with keys:
+        surficial_material, surface_expression, texture, geomorphological processes
+        extent, coverage_relative_to_next_terrain_type
+        
+        If the terrain code does not specify any of the terms, its value will be empty
+        
+        coverage_relative_to_next_terrain_type will only exist if the terrain code is
+         a composite describing multiple terrain types'''
         outjson = {self.instr :[]}
         for group in self.parsed:
-            groupdict = dict(type = group[0],
-                             something_else =group[1] if group[1] else None,
-                             and_furthermore = group[2] if group[2] else None,
-                             etc = group[3] if group[3] else None,
-                             also = group[4] if group[4] else None,
-                             lastly = group[5] if group[5] else None)
+            groupdict = dict(surficial_material = group[0],
+                             surface_expression =group[1] if group[1] else None,
+                             texture = group[2] if group[2] else None,
+                             geomorphological_processes = group[3] if group[3] else None,
+                             extent = group[4] if group[4] else None,
+                             coverage_relative_to_next_terrain_type = group[5] if group[5] else None)
             outjson[self.instr].append(groupdict)
         return outjson                    
     
