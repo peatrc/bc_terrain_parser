@@ -299,8 +299,9 @@ bedrock_R_subclass_terms = {
 }
 
 class Terrain:
-    '''British Columbia Terrain Classification System (1997) parser
-    '''
+    """
+    British Columbia Terrain Classification System (1997) parser
+    """
     def __init__(self, instr:str, strictmode:int=0)->None:
         '''
         instr : str
@@ -313,20 +314,26 @@ class Terrain:
         self.strictmode = strictmode
 
     @property
-    def parsed(self, terrain_code : str = None, strictmode: int = 0) -> list :
-        '''
-        Returns a list of lists. Each element contains seven sub elements representing
+    def parsed(self, terrain_code : str = None, strictmode: int = 1) -> list :
+        """
+        Given a terrain code, returns a list of lists. Each element contains eight sub elements representing
         ['Surficial Material', 'Surface Expression', 'Texture', 
         'Geomorphological Proccess(es)', 'Extent', 'Coverage Relative to next Terrain Type',
-        'Unparsed Terms'] 
+        'Unparsed Terms', 'BCTCS code fragment that was parsed'] 
         
-        terrain_code : str
+        :param terrain_code : str
             BC Terrain Classification String
         
-        strictmode : int
+        param strictmode : int
             Boolean indicating strict mode on/off
         
-        '''
+        >>> Terrain('Mbv').parsed
+        [['Morainal Material(Till) (Inactive)', 'blanket veneer', '', '', 'continuous', '', '', 'Mbv']]
+
+        >>> Terrain('Mbv/Cv-VRAsd').parsed
+        [['Morainal Material(Till) (Inactive)', 'blanket veneer', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Mbv/'], ['Colluvium (Active)', 'veneer steep slope depression(s)', '', 'Gully erosion (Active) Rapid mass movements (Active) Snow avalanches (Active) s* ', 'continuous', '', '', 'Cv-VRAsd']]
+        
+        """
          #This is just the BCTCSParse function
         if not terrain_code:
             terrain_code = self.instr
@@ -367,7 +374,7 @@ class Terrain:
         terrain_code_split = [item for item in terrain_code_split if item.strip()]
         
         # DEBUGGING print the resulting list
-        print(terrain_code_split)
+        #print(terrain_code_split)
 
         ###END SPLITTING SECTION
 
@@ -451,20 +458,20 @@ class Terrain:
             # *EXTENT RELATIVE TO NEXT TERRAIN TYPE* assign the sixth value (terrain extent relative to the following terrain)
             sixth_val = ''
             if string[-1] == "=":
-                sixth_val = "equal extent"
+                sixth_val = "equal extent relative to next terrain type"
             elif string[-1] == "/":
                 if len(string) > 1 and string[-2] == "/":
-                    sixth_val = "much greater extent"
+                    sixth_val = "much greater extent relative to next terrain type"
                 else:
-                    sixth_val = "greater extent"
+                    sixth_val = "greater extent relative to next terrain type"
             elif string[-1].isdigit():
                 sixth_val = string[-1]
 
             # add the values to the new list
-            new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val, ''])
+            new_list.append([first_val, second_val, third_val, fourth_val, fifth_val, sixth_val, '', string])
         
         # DEBUGGING PRINT UPDATES
-            print(new_list)
+#           print(new_list)
         # print(new_list[0])
         # print(new_list[0][0][:2])
 
@@ -618,11 +625,11 @@ class Terrain:
             # check the potential error string and remove the training two characters if there potential errors (string clean-up before returning)
             if new_list[i][6][-2:] == ', ' or new_list[i][6][-2:] == '; ':
                 new_list[i][6] = new_list[i][6][:-2]
-        print(new_list)
+#        print(new_list)
         
         if any(len(sublist[6]) > 0 for sublist in new_list):
             error_msg = ''.join(sublist[6] for sublist in new_list if len(sublist[6]) > 0)
-            print(error_msg)
+ #           print(error_msg)
             if strictmode == 1:
                 raise ValueError(error_msg)
         else: 
@@ -643,44 +650,100 @@ class Terrain:
 
 
     def __len__(self):
-        '''Returns the amount of terrain types in the given terrain code'''
+        """
+        Returns the amount of terrain types in the given terrain code
+        
+        >>> len(Terrain('Rha'))
+        1
+        >>> len(Terrain('Rha/aCk'))
+        2
+        """
         return len(self.parsed)
     
     def __getitem__(self, key):
-        '''Returns only the discriptors of the terrain type given in the key
+        """
+        Returns only the discriptors of the terrain type given in the key
         e.g., if the key is 0 the first terrain type is returned
         if the key is 1 the second terrain type is returned
-        if the key is n, the n+1 terrain type is returned'''
+        if the key is n, the n+1 terrain type is returned
+        
+        >>> Terrain('Rha/aCk')[0]
+        ['Bedrock (Activity status n/a)', 'hummock(s) Moderate slope', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Rha/']
+        >>> Terrain('Rha/aCk')[1]
+        ['Colluvium (Active)', 'moderately steep slope', 'Blocks', '', 'continuous', '', '', 'aCk']
+
+        """
         return(self.parsed[key])
     
     def __str__(self):
-        '''Returns one string of the descriptors of all terrain types of the given terrain code.
+        """
+        Returns one string of the descriptors of all terrain types of the given terrain code.
         If there are multiple types of terrain in the code (i.e., it is a composite code) then
         the descriptors for each terrain type are separated by a ' / '.
-        '''
-        return ' / '.join([' '.join([y for y in x if y]) for x in self.parsed])
+        
+        >>> str(Terrain('Mbv'))       
+        'Morainal Material(Till) (Inactive) blanket veneer continuous'
+        >>> str(Terrain('Us-V/Rs'))
+        'Undifferentiated Materials (Activity status n/a) steep slope Gully erosion (Active)  continuous greater extent relative to next terrain type / Bedrock (Activity status n/a) steep slope continuous'
+        
+        """
+        # parsed_result = self.parsed
+        # for sublist in parsed_result:
+        #     if len(sublist) >= 6 and 'extent' in sublist[5]
+        #         sublist[5] += ' than next terrain type'
+        return ' / '.join([' '.join([y for y in x[:7] if y]) for x in self.parsed])
 
     def __int__(self):
-        '''Returns the amount of terrain types in the given terrain code'''
+        """
+        Returns the amount of terrain types in the given terrain code'''
+        
+        >>> print(len(Terrain('Rha')))
+        1
+        >>> print(len(Terrain('Rha/aCk')))
+        2
+
+        """
         return(len(self.parsed))
     
     def max(self):
-        '''Returns the list of descriptors of the last terrain type of the given terrain code'''
+        """
+        Returns the list of descriptors of the last terrain type of the given terrain code
+        
+        >>> max(Terrain('Rha/aCk'))
+        ['Colluvium (Active)', 'moderately steep slope', 'Blocks', '', 'continuous', '', '', 'aCk']
+
+        """
         return self.parsed[-1]
     
     def min(self):
-        '''Returns the list of descriptors of the first terrain type of the given terrain code'''
+        """
+        Returns the list of descriptors of the first terrain type of the given terrain code
+        
+        >>> min(Terrain('Rha/aCk'))
+        ['Bedrock (Activity status n/a)', 'hummock(s) Moderate slope', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Rha/']
+
+        """
+               
         return self.parsed[0]
 
     def json(self):
-        '''Terrain code attributes returned as a dictionary with keys:
+        """
+        Terrain code attributes returned as a dictionary with keys:
         surficial_material, surface_expression, texture, geomorphological processes
         extent, coverage_relative_to_next_terrain_type
         
         If the terrain code does not specify any of the terms, its value will be empty
         
         coverage_relative_to_next_terrain_type will only exist if the terrain code is
-         a composite describing multiple terrain types'''
+         a composite describing multiple terrain types
+        
+        >>> Terrain('Rha').json()
+        {'Rha': [{'surficial_material': 'Bedrock (Activity status n/a)', 'surface_expression': 'hummock(s) Moderate slope', 'texture': None, 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': None}]}
+        
+        >>> Terrain('rCa/Rs').json()
+        {'rCa/Rs': [{'surficial_material': 'Colluvium (Active)', 'surface_expression': 'Moderate slope', 'texture': 'Rubble', 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': 'greater extent relative to next terrain type'}, {'surficial_material': 'Bedrock (Activity status n/a)', 'surface_expression': 'steep slope', 'texture': None, 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': None}]}
+        """
+        
         outjson = {self.instr :[]}
         for group in self.parsed:
             groupdict = dict(surficial_material = group[0],
@@ -700,13 +763,35 @@ if __name__ == '__main__':
     #print(terrain_code)
     #returned_list = BCTCSparse(terrain_code)
     #print(returned_list)
-    terrain = Terrain('/Msa=Mw-V/Rsa')
-    print(terrain.instr)
-    print(terrain.parsed)
-    print(len(terrain))
-    print(terrain[1])
-    print(str(terrain))
-    print(terrain.min())
-    print(terrain.max())
-    print(terrain.json())
-    print(int(terrain))
+    # terrain = Terrain('/Msa=Mw-V/Rsa')
+    # print('this one', Terrain('/Msa=Mw-V/Rsa').parsed)
+    # print(terrain.instr)
+    # print('terrain.parsed ', terrain.parsed)
+    # print(len(terrain))
+    # print(terrain[1])
+    # print(str(terrain))
+    # print(terrain.min())
+    # print(terrain.max())
+    # print(terrain.json())
+    # print(int(terrain))
+    print(Terrain('gFGs=Cs/Mv/Rs-V').parsed)
+    print(Terrain('gFGs=Cs/Mv/Rs-V')[1])
+    print(len(Terrain('Rha')))
+    print(len(Terrain('Rha/aCk')))
+    print(Terrain('Rha/aCk')[0])
+    print(Terrain('Rha/aCk')[1])
+    print(Terrain('Us-V/Rs'))
+    print(Terrain('Mbv'))
+    print(Terrain('Mbv').parsed)
+    print(Terrain('Mbv/Cv-VRAsd').parsed)
+    print(min(Terrain('Rha/aCk')))
+    print(max(Terrain('Rha/aCk')))
+    print(Terrain('Rha').json())
+    print(Terrain('rCa/Rs').json())
+    import doctest
+    doctest.testmod()    
+
+    
+
+
+

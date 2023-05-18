@@ -1,0 +1,6 @@
+import BCTCS
+
+terrain = BCTCS.Terrain('Rsa/FGa')
+print(type(terrain))
+print(terrain.parsed)
+print(terrain.json())
