@@ -1,13 +1,15 @@
-# BC Terrain Classification System string parser (for the 1997 BCTCS System)
+# BC Terrain Classification System string parser
 
 The BC Terrain Classification System is a scheme designed for the classification of 
 surficial materials, landforms and geomorphological processes of a mappable area.
+The standards for this system are outlined in great detail in 
+https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf
 
 This script takes as input a single string of alphanumeric characters which represent
 the characteristics of terrain encoded by the classification system and returns a list
 (or lists) containging plain english language descriptions of the terrain.
 
-With these utilities you can:
+With this module:
 
 * Get the English-language description of a BCTCS code
 * Get a list of properties of a BCTCS code (i.e., its surface material, surface expression,
