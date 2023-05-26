@@ -15,8 +15,8 @@ With this module:
 * Get a list of properties of a BCTCS code (i.e., its surface material, surface expression,
 texture, Geomorphological proccesses, extent)
 * Get those same properties above, but in a dictionary format.
-* If the code is composite (i.e., contains more than one terrain type) you can get the
-amount of terrain types in the code, or first type, or last type.
+* If the code is composite (i.e., contains more than one terrain type delineated by '/') you 
+can get the quantity of terrain types in the code, first type, last type, or specify the n-th type.
 
 
 
