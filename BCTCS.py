@@ -334,16 +334,13 @@ class Terrain:
         [['Morainal Material(Till) (Inactive)', 'blanket veneer', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Mbv/'], ['Colluvium (Active)', 'veneer steep slope depression(s)', '', 'Gully erosion (Active) Rapid mass movements (Active) Snow avalanches (Active) s* ', 'continuous', '', '', 'Cv-VRAsd']]
         
         """
-         #This is just the BCTCSParse function
+        #This is just the BCTCSParse function
         if not terrain_code:
             terrain_code = self.instr
        
         if not strictmode:
             strictmode = self.strictmode
 
-               
-        #whether unparsed items will break the program (1) or run program and display unparsed items (0)
-        #strictmode=0
         # initialize an empty list called terrain_code_split
         terrain_code_split = []
 
@@ -351,8 +348,8 @@ class Terrain:
         current_index = 0
         
         # SPLIT THE CODE WHEN MULTIPLE TERRAIN TYPES ARE CONTAINED IN A CODE
-        # This occurs when code contains '/' '//' or '=' chars (except for position 0 where '/' indicates discontinuity)
-        # loop through the indices of terrain_code
+        # This occurs when code contains '/' '//' or '=' chars (except for
+        # position 0 where '/' indicates discontinuity) loop through the indices of terrain_code
         for i in range(len(terrain_code)):
             # if the current character is "/" or "=" and not the first character of terrain_code
             if terrain_code[i] in ["/", "="] and i != 0:
@@ -373,9 +370,6 @@ class Terrain:
         # strip any blank entries before moving on
         terrain_code_split = [item for item in terrain_code_split if item.strip()]
         
-        # DEBUGGING print the resulting list
-        #print(terrain_code_split)
-
         ###END SPLITTING SECTION
 
         # PARSE/INTERPRET CODES IN THIS SECTION
@@ -756,13 +750,14 @@ class Terrain:
         return outjson                    
     
 if __name__ == '__main__':
-
+    # Paul's Hard-coded testing/debugging:
+    #
     # create a variable called terrain_code and set its value to "/Msa=Mw-V/Rsa"
-    #terrain_code = "/Msa=Mw-V/Rsa"
-    #print(len(terrain_code))
-    #print(terrain_code)
-    #returned_list = BCTCSparse(terrain_code)
-    #print(returned_list)
+    # terrain_code = "/Msa=Mw-V/Rsa"
+    # print(len(terrain_code))
+    # print(terrain_code)
+    # returned_list = BCTCSparse(terrain_code)
+    # print(returned_list)
     # terrain = Terrain('/Msa=Mw-V/Rsa')
     # print('this one', Terrain('/Msa=Mw-V/Rsa').parsed)
     # print(terrain.instr)
@@ -774,20 +769,25 @@ if __name__ == '__main__':
     # print(terrain.max())
     # print(terrain.json())
     # print(int(terrain))
-    print(Terrain('gFGs=Cs/Mv/Rs-V').parsed)
-    print(Terrain('gFGs=Cs/Mv/Rs-V')[1])
-    print(len(Terrain('Rha')))
-    print(len(Terrain('Rha/aCk')))
-    print(Terrain('Rha/aCk')[0])
-    print(Terrain('Rha/aCk')[1])
-    print(Terrain('Us-V/Rs'))
-    print(Terrain('Mbv'))
-    print(Terrain('Mbv').parsed)
-    print(Terrain('Mbv/Cv-VRAsd').parsed)
-    print(min(Terrain('Rha/aCk')))
-    print(max(Terrain('Rha/aCk')))
-    print(Terrain('Rha').json())
-    print(Terrain('rCa/Rs').json())
+    
+
+    # Pete's hard-coded print tests for debugging:
+    #
+    # print(Terrain('gFGs=Cs/Mv/Rs-V').parsed)
+    # print(Terrain('gFGs=Cs/Mv/Rs-V')[1])
+    # print(len(Terrain('Rha')))
+    # print(len(Terrain('Rha/aCk')))
+    # print(Terrain('Rha/aCk')[0])
+    # print(Terrain('Rha/aCk')[1])
+    # print(Terrain('Us-V/Rs'))
+    # print(Terrain('Mbv'))
+    # print(Terrain('Mbv').parsed)
+    # print(Terrain('Mbv/Cv-VRAsd').parsed)
+    # print(min(Terrain('Rha/aCk')))
+    # print(max(Terrain('Rha/aCk')))
+    # print(Terrain('Rha').json())
+    # print(Terrain('rCa/Rs').json())
+    
     import doctest
     doctest.testmod()    
 
