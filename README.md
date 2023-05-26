@@ -1,4 +1,4 @@
-# BC Terrain Classification System string parser
+# BC Terrain Classification System String Parser
 
 The BC Terrain Classification System is a scheme designed for the classification of 
 surficial materials, landforms and geomorphological processes of a mappable area.
