@@ -2,8 +2,8 @@
 
 The BC Terrain Classification System is a scheme designed for the classification of 
 surficial materials, landforms and geomorphological processes of a mappable area.
-The standards for this system are outlined in great detail in the [BC TERRAIN CLASSIFICATION SYSTEM
-FOR BRITISH COLUMBIA V.2 1997](https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf)
+The standards for this system are outlined in great detail in the [Terrain Classification System
+for British Columbia v.2 (1997)](https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf)
 
 This script takes as input a single string of alphanumeric characters which represent
 the characteristics of terrain encoded by the classification system and returns a list
