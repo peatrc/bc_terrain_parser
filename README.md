@@ -26,7 +26,7 @@ can get the quantity of terrain types in the code, first type, last type, or spe
 
 ## Documentation and API reference
 
-User-friendly documentation is available at <https://peatrc.github.io/bc_terrain_parser/>. This includes complete descriptions of all console utilities and a complete API reference.
+User-friendly documentation of all methods and examples are available at <https://peatrc.github.io/bc_terrain_parser/>. 
 
 ## Source code
 
