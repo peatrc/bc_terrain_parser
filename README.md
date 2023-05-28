@@ -22,11 +22,11 @@ can get the quantity of terrain types in the code, first type, last type, or spe
 
 ## Quick install
 
-`pip install bctcs_terrain_parser`
+`pip install bctcs_terrain_parser` (not yet implemented)
 
 ## Documentation and API reference
 
-User-friendly documentation is available at <https://>. This includes complete descriptions of all console utilities and a complete API reference.
+User-friendly documentation is available at <https://peatrc.github.io/bc_terrain_parser/>. This includes complete descriptions of all console utilities and a complete API reference.
 
 ## Source code
 
