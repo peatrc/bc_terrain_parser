@@ -6,8 +6,8 @@ The standards for this system are outlined in great detail in the [Terrain Class
 for British Columbia v.2 (1997)](https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf)
 
 This script takes as input a single string of alphanumeric characters which represent
-the characteristics of terrain encoded by the classification system and returns a list
-(or lists) containging plain english language descriptions of the terrain.
+the characteristics of terrain encoded by the classification system, and returns english
+language descriptions of the terrain.
 
 With this module:
 
