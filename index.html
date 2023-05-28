@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>bctcs_terrain_parser</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Overview";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> bctcs_terrain_parser
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#quick-install">Quick install</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#documentation-and-api-reference">Documentation and API reference</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#source-code">Source code</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="api_ref/">API reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="LICENSE/">License</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="credits/">Credits</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">bctcs_terrain_parser</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li>Overview</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="bc-terrain-classification-system-string-parser-for-the-1997-bctcs-system">BC Terrain Classification System string parser (for the 1997 BCTCS System)<a class="headerlink" href="#bc-terrain-classification-system-string-parser-for-the-1997-bctcs-system" title="Permanent link">&para;</a></h1>
+<p>The BC Terrain Classification System (BCTCS) is a scheme designed for the classification of 
+surficial materials, landforms and geomorphological processes of a mappable area. The latest version of the classification is fully described here: <a href="https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf">https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf</a> (1997).</p>
+<p>This python script takes as input a single string of alphanumeric characters which represent
+the characteristics of terrain encoded by the classification system and returns a list
+(or lists) containing plain english language descriptions of the terrain, returned as a string, list or dictionary.</p>
+<p>With this script you can:</p>
+<ul>
+<li>Get the English-language description of a BCTCS code</li>
+<li>Get a list of properties of a BCTCS code (i.e., its surface material, surface expression,
+texture, Geomorphological proccesses, extent)</li>
+<li>Get those same properties above, but in a dictionary format.</li>
+<li>If the code is composite (i.e., contains more than one terrain type) you can get the
+amount of terrain types in the code, or first type, or last type.</li>
+</ul>
+<h2 id="quick-install">Quick install<a class="headerlink" href="#quick-install" title="Permanent link">&para;</a></h2>
+<p><code>pip install bctcs_terrain_parser</code></p>
+<h2 id="documentation-and-api-reference">Documentation and API reference<a class="headerlink" href="#documentation-and-api-reference" title="Permanent link">&para;</a></h2>
+<p>User-friendly documentation is available at <a href="https://">https://</a>. This includes complete descriptions of all console utilities and a complete API reference.</p>
+<h2 id="source-code">Source code<a class="headerlink" href="#source-code" title="Permanent link">&para;</a></h2>
+<p>The primary repository for this software is at <a href="https://github.com/peatrc/bc_terrain_parser">https://github.com/peatrc/bc_terrain_parser</a>.</p>
+<p>More information is available at the <a href="api_ref/">API reference</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="api_ref/" class="btn btn-neutral float-right" title="API reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="api_ref/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.4.3
+Build Date UTC : 2023-05-28 01:13:03.235181+00:00
+-->

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>API reference - bctcs_terrain_parser</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "API reference";
+        var mkdocs_page_input_path = "api_ref.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> bctcs_terrain_parser
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">API reference</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#terrainbctcs_terrain_code-strictmode">Terrain(BCTCS_terrain_code, strictmode)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#param-bctcs-terrain_code-str">param BCTCS terrain_code : str</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#param-strictmode-int-default-1">param strictmode : int (default = 1)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#terrainparsed">Terrain().parsed</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#str">str():</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#json">json():</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#len">len():</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getitemkey">getitem(key):</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#int">int():</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#max">max():</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#min">min():</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">License</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../credits/">Credits</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">bctcs_terrain_parser</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li>API reference</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="api-reference-for-terrain-class">API Reference for Terrain class<a class="headerlink" href="#api-reference-for-terrain-class" title="Permanent link">&para;</a></h1>
+<hr />
+<h2 id="terrainbctcs_terrain_code-strictmode">Terrain(BCTCS_terrain_code, strictmode)<a class="headerlink" href="#terrainbctcs_terrain_code-strictmode" title="Permanent link">&para;</a></h2>
+<h4 id="param-bctcs-terrain_code-str">param BCTCS terrain_code : str<a class="headerlink" href="#param-bctcs-terrain_code-str" title="Permanent link">&para;</a></h4>
+<p>BC Terrain Classification string, (codified from the standards given in the <a href="https://www2.gov.bc.ca/assets/gov/environment/natural-resource-stewardship/nr-laws-policy/risc/terclass_system_1997.pdf">BC Terrain Classification System</a>)</p>
+<h4 id="param-strictmode-int-default-1">param strictmode : int (default = 1)<a class="headerlink" href="#param-strictmode-int-default-1" title="Permanent link">&para;</a></h4>
+<p>Boolean indicating strict mode on/off. Default = 1. Passing a 0 will let the parser return a
+string result to the best of its ability, and also make note of the unparsable characters but not fail.</p>
+<p>Examples:</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; terrain = Terrain('Rha')
+
+&gt;&gt;&gt; print(type(terrain))
+&lt;class '__main__.Terrain'&gt;
+</code></pre>
+
+<p>Printing a Terrain object will return a string of the parsed BCTCS terrain code</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; print(terrain)
+Bedrock (Activity status n/a) hummock(s) Moderate slope continuous
+</code></pre>
+
+<h2 id="terrainparsed">Terrain().parsed<a class="headerlink" href="#terrainparsed" title="Permanent link">&para;</a></h2>
+<p>.parsed is a @property of a Terrain object</p>
+<p>Given a terrain object, .parsed returns a list of lists where each element contains eight sub elements representing
+[&lsquo;Surficial Material&rsquo;, &lsquo;Surface Expression&rsquo;, &lsquo;Texture&rsquo;, 
+&lsquo;Geomorphological Proccess(es)&rsquo;, &lsquo;Extent&rsquo;, &lsquo;Coverage Relative to next Terrain Type&rsquo;,
+&lsquo;Unparsed Terms&rsquo;, &lsquo;BCTCS code fragment that was parsed&rsquo;] </p>
+<pre class="codehilite"><code>&gt;&gt;&gt; Terrain('Mbv').parsed
+[['Morainal Material(Till) (Inactive)', 'blanket veneer', '', '', 'continuous', '', '', 'Mbv']]
+
+&gt;&gt;&gt; Terrain('Mbv/Cv-VRAsd').parsed
+[['Morainal Material(Till) (Inactive)', 'blanket veneer', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Mbv/'], ['Colluvium (Active)', 'veneer steep slope depression(s)', '', 'Gully erosion (Active) Rapid mass movements (Active) Snow avalanches (Active) s* ', 'continuous', '', '', 'Cv-VRAsd']]
+</code></pre>
+
+<p>NB: coverage_relative_to_next_terrain_type will only exist if the terrain code is a composite describing multiple terrain types, otherwise it will return empty.</p>
+<h2 id="str"><strong>str</strong>():<a class="headerlink" href="#str" title="Permanent link">&para;</a></h2>
+<p>Returns one string of the descriptors of all terrain types of the given terrain code.
+If there are multiple types of terrain in the code (i.e., it is a composite code) then
+the descriptors for each terrain type are separated by a &lsquo; / &lsquo;.</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; str(Terrain('Mbv'))       
+'Morainal Material(Till) (Inactive) blanket veneer continuous'
+
+&gt;&gt;&gt; str(Terrain('Us-V/Rs'))
+'Undifferentiated Materials (Activity status n/a) steep slope Gully erosion (Active)  
+continuous greater extent relative to next terrain type / Bedrock (Activity status n/a) 
+steep slope continuous'
+</code></pre>
+
+<h2 id="json">json():<a class="headerlink" href="#json" title="Permanent link">&para;</a></h2>
+<p>Terrain code attributes returned as a dictionary with keys:
+surficial_material, surface_expression, texture, geomorphological processes
+extent, coverage_relative_to_next_terrain_type</p>
+<p>If the terrain code does not specify any of the terms, its value will be empty.</p>
+<p>NB: coverage_relative_to_next_terrain_type will only exist if the terrain code is
+a composite describing multiple terrain types, otherwise it will return empty.</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; Terrain('Rha').json()
+{'Rha': [{'surficial_material': 'Bedrock (Activity status n/a)', 'surface_expression': 'hummock(s) Moderate slope', 'texture': None, 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': None}]}
+
+&gt;&gt;&gt; Terrain('rCa/Rs').json()
+{'rCa/Rs': [{'surficial_material': 'Colluvium (Active)', 'surface_expression': 'Moderate slope', 'texture': 'Rubble', 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': 'greater extent relative to next terrain type'}, {'surficial_material': 'Bedrock (Activity status n/a)', 'surface_expression': 'steep slope', 'texture': None, 'geomorphological_processes': None, 'extent': 'continuous', 'coverage_relative_to_next_terrain_type': None}]}
+</code></pre>
+
+<h2 id="len"><strong>len</strong>():<a class="headerlink" href="#len" title="Permanent link">&para;</a></h2>
+<p>Returns the amount of terrain types in the given terrain code</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; len(Terrain('Rha'))
+1
+
+&gt;&gt;&gt; len(Terrain('Rha/aCk'))
+2
+</code></pre>
+
+<h2 id="getitemkey"><strong>getitem</strong>(key):<a class="headerlink" href="#getitemkey" title="Permanent link">&para;</a></h2>
+<p>Returns only the discriptors of the terrain type given in the key e.g., if the key is 0 the first terrain type is returned if the key is 1 the second terrain type is returned if the key is n, the n+1 terrain type is returned</p>
+<pre class="codehilite"><code>    &gt;&gt;&gt; Terrain('Rha/aCk')[0]
+    ['Bedrock (Activity status n/a)', 'hummock(s) Moderate slope', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Rha/']
+
+    &gt;&gt;&gt; Terrain('Rha/aCk')[1]
+    ['Colluvium (Active)', 'moderately steep slope', 'Blocks', '', 'continuous', '', '', 'aCk']
+</code></pre>
+
+<h2 id="int"><strong>int</strong>():<a class="headerlink" href="#int" title="Permanent link">&para;</a></h2>
+<p>Returns the amount of terrain types in the given terrain code</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; print(len(Terrain('Rha')))
+1
+
+&gt;&gt;&gt; print(len(Terrain('Rha/aCk')))
+2
+</code></pre>
+
+<h2 id="max">max():<a class="headerlink" href="#max" title="Permanent link">&para;</a></h2>
+<p>Returns the list of descriptors of the last terrain type of the given terrain code</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; max(Terrain('Rha/aCk'))
+['Colluvium (Active)', 'moderately steep slope', 'Blocks', '', 'continuous', '', '', 'aCk']
+</code></pre>
+
+<h2 id="min">min():<a class="headerlink" href="#min" title="Permanent link">&para;</a></h2>
+<p>Returns the list of descriptors of the first terrain type of the given terrain code</p>
+<pre class="codehilite"><code>&gt;&gt;&gt; min(Terrain('Rha/aCk'))
+['Bedrock (Activity status n/a)', 'hummock(s) Moderate slope', '', '', 'continuous', 'greater extent relative to next terrain type', '', 'Rha/']
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../LICENSE/" class="btn btn-neutral float-right" title="License">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../LICENSE/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
