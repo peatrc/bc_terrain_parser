@@ -22,7 +22,11 @@ can get the quantity of terrain types in the code, first type, last type, or spe
 
 ## Quick install
 
+To install the BCTCS Parser package using pip, type the following into terminal:
+
   pip install -i https://test.pypi.org/simple/ bctcs-terrain-parser-peatrc==0.0.1
+  
+Alternatively, go to https://test.pypi.org/project/bctcs-terrain-parser-peatrc/0.0.1/ and follow their instructions.
 
 ## Documentation and API reference
 
